@@ -352,7 +352,7 @@ body{
   animation:winPop .8s ease;
 }
 
-/* prize-specific */
+/* 상품별 CSS */
 .theme-violent{
   color:#ff8b8b !important;
   text-shadow:
@@ -709,6 +709,359 @@ button:disabled{
   .login-form{grid-template-columns:1fr;}
   .auth-head{display:grid;}
 }
+
+
+/* 모바일 CSS */
+@media (max-width: 680px){
+  html,
+  body{
+    height:auto;
+    min-height:100%;
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
+
+  body{
+    display:block;
+    padding:10px 8px calc(18px + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust:100%;
+  }
+
+  .bg-grid{
+    background-size:28px 28px;
+    opacity:.8;
+    mask-image:radial-gradient(circle at center, black 22%, transparent 90%);
+  }
+
+  .bg-grid::after{
+    animation-duration:10s;
+    opacity:.2;
+  }
+
+  .particles{
+    display:none;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:100%;
+    margin:0 auto;
+  }
+
+  .panel{
+    width:100%;
+    padding:14px;
+    border-radius:18px;
+    overflow:visible;
+    backdrop-filter:blur(6px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.03) inset,
+      0 0 18px rgba(0,246,255,.16),
+      0 0 42px rgba(0,246,255,.08);
+  }
+
+  .panel::before{
+    border-radius:18px;
+    opacity:.58;
+  }
+
+  .header{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-bottom:12px;
+  }
+
+  .sub{
+    font-size:10px;
+    letter-spacing:1.8px;
+    line-height:1.4;
+  }
+
+  .title{
+    font-size:clamp(27px, 9vw, 36px);
+    line-height:1.08;
+    letter-spacing:2px;
+    word-break:keep-all;
+  }
+
+  .warning{
+    justify-self:start;
+    max-width:100%;
+    padding:.4em .75em;
+    font-size:10px;
+    line-height:1.35;
+    letter-spacing:.4px;
+    white-space:normal;
+  }
+
+  .auth-card{
+    padding:12px;
+    margin-bottom:12px;
+    border-radius:14px;
+  }
+
+  .auth-head{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:start;
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  .auth-desc{
+    font-size:12px;
+    line-height:1.45;
+  }
+
+  .login-form{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+
+  .login-form label{
+    gap:5px;
+    font-size:10px;
+  }
+
+  .login-form input{
+    min-height:46px;
+    padding:12px;
+    border-radius:11px;
+    font-size:16px;
+  }
+
+  .login-form button,
+  .auth-logout{
+    min-height:46px;
+    padding:12px;
+    font-size:12px;
+    border-radius:11px;
+  }
+
+  .session-box{
+    padding:11px;
+    gap:6px 10px;
+    line-height:1.45;
+  }
+
+  .session-label{
+    font-size:10px;
+    letter-spacing:1.5px;
+  }
+
+  #sessionSub,
+  .auth-message{
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  .statusbar{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+    margin-bottom:12px;
+  }
+
+  .badge{
+    min-height:74px;
+    padding:10px;
+    border-radius:13px;
+  }
+
+  .badge strong{
+    display:block;
+    font-size:10px;
+    line-height:1.3;
+    letter-spacing:.3px;
+  }
+
+  .badge .value{
+    margin-top:8px;
+    font-size:18px;
+    line-height:1.15;
+    letter-spacing:.4px;
+    overflow-wrap:anywhere;
+  }
+
+  .layout{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .screen{
+    min-height:240px;
+    padding:16px 14px;
+    border-radius:17px;
+  }
+
+  .result-box{
+    min-height:200px;
+    gap:9px;
+  }
+
+  .label{
+    font-size:10px;
+    letter-spacing:3px;
+  }
+
+  .result{
+    width:100%;
+    font-size:clamp(31px, 11vw, 44px);
+    line-height:1.18;
+    letter-spacing:1.5px;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+
+  .desc{
+    max-width:100%;
+    min-height:auto;
+    font-size:13px;
+    line-height:1.6;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+
+  .controls{
+    margin-top:12px;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .controls #drawBtn{
+    grid-column:1 / -1;
+  }
+
+  button{
+    min-height:58px;
+    padding:14px 12px;
+    border-radius:15px;
+    font-size:13px;
+    line-height:1.3;
+    letter-spacing:1.5px;
+  }
+
+  .smallbtn,
+  .dangerbtn{
+    font-size:12px;
+  }
+
+  .side{
+    gap:12px;
+  }
+
+  .card{
+    min-height:auto;
+    padding:12px;
+    border-radius:15px;
+  }
+
+  .card-title{
+    margin-bottom:9px;
+    font-size:10px;
+    letter-spacing:2px;
+  }
+
+  .log-list,
+  .win-list{
+    max-height:190px;
+    gap:7px;
+  }
+
+  .win-item,
+  .log-item{
+    padding:10px;
+    border-radius:10px;
+    font-size:12px;
+    line-height:1.35;
+  }
+
+  .win-item{
+    display:grid;
+    grid-template-columns:24px 1fr;
+    align-items:start;
+    gap:8px;
+  }
+
+  .log-item{
+    display:grid;
+    grid-template-columns:78px 1fr auto;
+    align-items:center;
+    gap:8px;
+  }
+
+  .log-item b,
+  .win-item span:last-child{
+    min-width:0;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+
+  .win-item small,
+  .log-item .meta{
+    font-size:10px;
+  }
+
+  .empty{
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  .footer-note{
+    margin-top:10px;
+    text-align:center;
+    font-size:9.5px;
+    line-height:1.45;
+    letter-spacing:.8px;
+  }
+}
+
+@media (max-width: 360px){
+  body{
+    padding-left:6px;
+    padding-right:6px;
+  }
+
+  .panel{
+    padding:12px;
+  }
+
+  .title{
+    font-size:clamp(25px, 8.5vw, 32px);
+    letter-spacing:1.5px;
+  }
+
+  .statusbar{
+    gap:7px;
+  }
+
+  .badge{
+    min-height:70px;
+    padding:9px;
+  }
+
+  .badge .value{
+    font-size:16px;
+  }
+
+  .result{
+    font-size:clamp(29px, 10.5vw, 39px);
+  }
+
+  .log-item{
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+
+  .controls{
+    grid-template-columns:1fr;
+  }
+
+  .controls #drawBtn{
+    grid-column:auto;
+  }
+}
+
 </style>
 </head>
 <body>
