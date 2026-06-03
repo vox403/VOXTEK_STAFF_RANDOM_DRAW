@@ -1,0 +1,1994 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOXTEK STAFF RANDOM DRAW</title>
+<style>
+:root{
+  --bg:#05070b;
+  --panel:#0a0f16cc;
+  --cyan:#00f6ff;
+  --cyan2:#7dfcff;
+  --pink:#ff2bd6;
+  --red:#ff3b5f;
+  --text:#d9ffff;
+  --dim:#7aa7ad;
+  --line:rgba(0,246,255,.22);
+  --gold:#ffd86b;
+  --green:#7dffb3;
+  --violet:#b388ff;
+  --rose:#ff8ac8;
+  --orange:#ff9f57;
+  --blue:#7ab8ff;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0,246,255,.08), transparent 30%),
+    radial-gradient(circle at 20% 20%, rgba(255,43,214,.08), transparent 25%),
+    radial-gradient(circle at 80% 80%, rgba(0,246,255,.06), transparent 25%),
+    linear-gradient(180deg, #04070a 0%, #020406 100%);
+  color:var(--text);
+  font-family:"Consolas","Pretendard","Malgun Gothic",monospace;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.bg-grid,
+.bg-grid::before,
+.bg-grid::after{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+.bg-grid{
+  background:
+    linear-gradient(rgba(0,246,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,246,255,.06) 1px, transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(circle at center, black 30%, transparent 85%);
+}
+.bg-grid::before{
+  content:"";
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.04) 0px,
+      rgba(255,255,255,.04) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  mix-blend-mode:screen;
+  opacity:.18;
+}
+.bg-grid::after{
+  content:"";
+  background:linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255,255,255,.05) 45%,
+    transparent 100%
+  );
+  animation:scan 7s linear infinite;
+  opacity:.3;
+}
+@keyframes scan{
+  from{transform:translateY(-100%)}
+  to{transform:translateY(100%)}
+}
+
+.particles{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.particle{
+  position:absolute;
+  width:2px;
+  height:70px;
+  background:linear-gradient(to bottom, transparent, rgba(0,246,255,.8), transparent);
+  opacity:.3;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  from{transform:translateY(-120px)}
+  to{transform:translateY(calc(100vh + 120px))}
+}
+
+.wrap{
+  width:min(94vw, 1040px);
+  position:relative;
+}
+
+.panel{
+  position:relative;
+  padding:24px;
+  border:1px solid var(--line);
+  background:var(--panel);
+  backdrop-filter:blur(10px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 0 22px rgba(0,246,255,.18),
+    0 0 60px rgba(0,246,255,.10),
+    0 0 120px rgba(255,43,214,.06);
+  border-radius:22px;
+  overflow:hidden;
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:22px;
+  padding:1px;
+  background:linear-gradient(135deg, rgba(0,246,255,.7), rgba(255,43,214,.6), rgba(0,246,255,.4));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:.7;
+  pointer-events:none;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:18px;
+}
+
+.title{
+  font-size:clamp(24px,4vw,40px);
+  font-weight:900;
+  letter-spacing:3px;
+  color:var(--cyan2);
+  text-shadow:
+    0 0 10px rgba(0,246,255,.7),
+    0 0 20px rgba(0,246,255,.35);
+}
+
+.sub{
+  color:var(--dim);
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+
+.warning{
+  display:inline-block;
+  padding:.35em .7em;
+  border:1px solid rgba(255,59,95,.4);
+  border-radius:999px;
+  color:#ff8ca2;
+  background:rgba(255,59,95,.08);
+  font-size:12px;
+  letter-spacing:1px;
+}
+
+.statusbar{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.badge{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  color:#b7fbff;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 0 14px rgba(0,246,255,.08) inset;
+  font-size:13px;
+}
+.badge strong{color:var(--cyan2)}
+.badge .value{
+  display:block;
+  margin-top:6px;
+  font-size:18px;
+  font-weight:900;
+  color:#fff;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1.35fr .95fr;
+  gap:16px;
+}
+
+.screen{
+  position:relative;
+  min-height:290px;
+  border-radius:18px;
+  border:1px solid rgba(0,246,255,.25);
+  background:
+    radial-gradient(circle at top, rgba(0,246,255,.12), transparent 45%),
+    linear-gradient(180deg, rgba(7,16,24,.95), rgba(4,8,12,.95));
+  box-shadow:
+    inset 0 0 30px rgba(0,246,255,.08),
+    inset 0 -30px 60px rgba(255,43,214,.05),
+    0 0 25px rgba(0,246,255,.08);
+  overflow:hidden;
+  padding:22px;
+}
+
+.screen::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.03) 0 2px,
+      transparent 2px 4px
+    );
+  opacity:.18;
+  pointer-events:none;
+}
+
+.flash{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle, rgba(255,255,255,.6), transparent 35%);
+  opacity:0;
+  pointer-events:none;
+}
+.flash.active{
+  animation:flash .6s ease;
+}
+@keyframes flash{
+  0%{opacity:0}
+  20%{opacity:.9}
+  100%{opacity:0}
+}
+
+.glitch-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+}
+.glitch-layer.active{
+  opacity:1;
+  animation:glitch .45s steps(2,end);
+}
+@keyframes glitch{
+  0%{transform:translate(0)}
+  20%{transform:translate(4px,-2px)}
+  40%{transform:translate(-3px,2px)}
+  60%{transform:translate(3px,1px)}
+  80%{transform:translate(-2px,-1px)}
+  100%{transform:translate(0)}
+}
+
+.result-box{
+  position:relative;
+  z-index:1;
+  min-height:205px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:10px;
+}
+
+.label{
+  color:#7dd6dc;
+  letter-spacing:3px;
+  font-size:12px;
+}
+
+.result{
+  font-size:clamp(30px,5vw,58px);
+  font-weight:900;
+  letter-spacing:2px;
+  text-shadow:0 0 14px rgba(0,246,255,.35);
+  transform-origin:center;
+  word-break:keep-all;
+  transition:filter .25s ease, text-shadow .25s ease, color .25s ease;
+}
+
+.desc{
+  min-height:24px;
+  color:#98b3b7;
+  font-size:14px;
+}
+
+.result.rolling{
+  animation:flicker .08s infinite;
+}
+@keyframes flicker{
+  0%{opacity:1; transform:translateX(0)}
+  25%{opacity:.85; transform:translateX(.5px)}
+  50%{opacity:.95; transform:translateX(-.5px)}
+  75%{opacity:.8; transform:translateX(.5px)}
+  100%{opacity:1; transform:translateX(0)}
+}
+
+.result.win{
+  color:var(--gold);
+  text-shadow:
+    0 0 10px rgba(255,216,107,.9),
+    0 0 24px rgba(255,216,107,.55),
+    0 0 45px rgba(255,43,214,.25);
+  animation:winPop .8s ease;
+}
+@keyframes winPop{
+  0%{transform:scale(.72); filter:blur(6px); opacity:.2}
+  45%{transform:scale(1.12); filter:blur(0); opacity:1}
+  100%{transform:scale(1)}
+}
+
+.result.lose{
+  color:#9cb1b4;
+  text-shadow:
+    0 0 8px rgba(255,255,255,.12),
+    0 0 20px rgba(255,59,95,.12);
+  animation:loseShake .45s ease;
+}
+@keyframes loseShake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+
+.result.final{
+  color:var(--green);
+  text-shadow:
+    0 0 12px rgba(125,255,179,.8),
+    0 0 24px rgba(125,255,179,.45);
+  animation:winPop .8s ease;
+}
+
+/* prize-specific */
+.theme-violent{
+  color:#ff8b8b !important;
+  text-shadow:
+    0 0 10px rgba(255,80,80,.9),
+    0 0 24px rgba(255,80,80,.5),
+    0 0 42px rgba(255,59,95,.28) !important;
+}
+.theme-cute{
+  color:#ff9fd8 !important;
+  text-shadow:
+    0 0 10px rgba(255,143,200,.95),
+    0 0 24px rgba(255,143,200,.52),
+    0 0 42px rgba(255,43,214,.28) !important;
+}
+.theme-mint{
+  color:#91ffd8 !important;
+  text-shadow:
+    0 0 10px rgba(145,255,216,.95),
+    0 0 24px rgba(145,255,216,.48),
+    0 0 42px rgba(0,246,255,.24) !important;
+}
+.theme-violet{
+  color:#c7a2ff !important;
+  text-shadow:
+    0 0 10px rgba(179,136,255,.95),
+    0 0 24px rgba(179,136,255,.52),
+    0 0 42px rgba(139,92,246,.28) !important;
+}
+.theme-gold{
+  color:#ffd86b !important;
+  text-shadow:
+    0 0 10px rgba(255,216,107,.95),
+    0 0 24px rgba(255,216,107,.52),
+    0 0 42px rgba(255,180,0,.28) !important;
+}
+.theme-orange{
+  color:#ffb072 !important;
+  text-shadow:
+    0 0 10px rgba(255,160,87,.95),
+    0 0 24px rgba(255,160,87,.52),
+    0 0 42px rgba(255,120,0,.28) !important;
+}
+.theme-blue{
+  color:#91c3ff !important;
+  text-shadow:
+    0 0 10px rgba(122,184,255,.95),
+    0 0 24px rgba(122,184,255,.5),
+    0 0 42px rgba(59,130,246,.28) !important;
+}
+
+.screen.effect-gold{
+  box-shadow:
+    inset 0 0 30px rgba(255,216,107,.12),
+    inset 0 -30px 60px rgba(255,200,90,.08),
+    0 0 35px rgba(255,216,107,.18);
+}
+.screen.effect-violet{
+  box-shadow:
+    inset 0 0 30px rgba(179,136,255,.12),
+    inset 0 -30px 60px rgba(139,92,246,.08),
+    0 0 35px rgba(179,136,255,.18);
+}
+.screen.effect-cute{
+  box-shadow:
+    inset 0 0 30px rgba(255,143,200,.12),
+    inset 0 -30px 60px rgba(255,43,214,.08),
+    0 0 35px rgba(255,143,200,.18);
+}
+.screen.effect-violent{
+  box-shadow:
+    inset 0 0 30px rgba(255,80,80,.12),
+    inset 0 -30px 60px rgba(255,59,95,.08),
+    0 0 35px rgba(255,80,80,.18);
+}
+.screen.effect-mint{
+  box-shadow:
+    inset 0 0 30px rgba(145,255,216,.12),
+    inset 0 -30px 60px rgba(0,246,255,.08),
+    0 0 35px rgba(145,255,216,.18);
+}
+.screen.effect-orange{
+  box-shadow:
+    inset 0 0 30px rgba(255,160,87,.12),
+    inset 0 -30px 60px rgba(255,120,0,.08),
+    0 0 35px rgba(255,160,87,.18);
+}
+.screen.effect-blue{
+  box-shadow:
+    inset 0 0 30px rgba(122,184,255,.12),
+    inset 0 -30px 60px rgba(59,130,246,.08),
+    0 0 35px rgba(122,184,255,.18);
+}
+
+.effect-burst::after{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:radial-gradient(circle, rgba(255,255,255,.13), transparent 35%);
+  animation:burst .9s ease;
+  pointer-events:none;
+}
+@keyframes burst{
+  0%{transform:scale(.4); opacity:0}
+  25%{transform:scale(1); opacity:1}
+  100%{transform:scale(1.4); opacity:0}
+}
+
+.controls{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:1fr 180px 160px;
+  gap:12px;
+}
+
+button{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  border-radius:16px;
+  padding:18px 18px;
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#03151a;
+  background:linear-gradient(180deg, var(--cyan2), var(--cyan));
+  box-shadow:
+    0 8px 20px rgba(0,246,255,.2),
+    0 0 18px rgba(0,246,255,.4),
+    inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease, opacity .12s ease;
+}
+button:hover{
+  transform:translateY(-2px) scale(1.01);
+  box-shadow:
+    0 10px 24px rgba(0,246,255,.25),
+    0 0 24px rgba(0,246,255,.55),
+    inset 0 1px 0 rgba(255,255,255,.7);
+}
+button:active{
+  transform:translateY(1px) scale(.995);
+  filter:brightness(.95);
+}
+button:disabled{
+  cursor:not-allowed;
+  opacity:.55;
+}
+
+.smallbtn{
+  background:linear-gradient(180deg, #1a2633, #101923);
+  color:#c9feff;
+  border:1px solid rgba(0,246,255,.25);
+  box-shadow:
+    0 0 14px rgba(0,246,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.dangerbtn{
+  background:linear-gradient(180deg, #3a1620, #241017);
+  color:#ffd3db;
+  border:1px solid rgba(255,59,95,.28);
+  box-shadow:
+    0 0 14px rgba(255,59,95,.12),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.side{
+  display:grid;
+  gap:16px;
+}
+
+.card{
+  border:1px solid rgba(0,246,255,.18);
+  border-radius:16px;
+  padding:14px;
+  background:rgba(2,6,10,.55);
+  min-height:120px;
+}
+
+.card-title{
+  color:#8eeef3;
+  font-size:12px;
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+
+.log-list,
+.win-list{
+  display:grid;
+  gap:8px;
+  max-height:220px;
+  overflow:auto;
+}
+
+.log-item,
+.win-item{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.02);
+  color:#adc9cc;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.03);
+}
+
+.log-item b{color:#fff}
+.log-item.win b{color:var(--gold)}
+.log-item.lose b{color:#c5d1d3}
+.log-item.final b{color:var(--green)}
+
+.win-item{
+  justify-content:flex-start;
+  color:#ffe8a2;
+  border-color:rgba(255,216,107,.18);
+  background:rgba(255,216,107,.04);
+}
+.win-item .index{
+  color:#fff;
+  min-width:22px;
+}
+
+.empty{
+  color:#6f8d92;
+  font-size:13px;
+}
+
+.footer-note{
+  margin-top:12px;
+  color:#6f8d92;
+  font-size:12px;
+  text-align:right;
+  letter-spacing:1px;
+}
+
+@media (max-width:920px){
+  .layout{
+    grid-template-columns:1fr;
+  }
+}
+@media (max-width:720px){
+  .controls{
+    grid-template-columns:1fr;
+  }
+  .statusbar{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media (max-width:520px){
+  .statusbar{
+    grid-template-columns:1fr;
+  }
+}
+
+
+.hidden{display:none !important;}
+.auth-card{
+  border:1px solid rgba(0,246,255,.18);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:16px;
+  background:rgba(2,6,10,.58);
+  box-shadow:0 0 18px rgba(0,246,255,.08) inset;
+}
+.auth-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.auth-desc{
+  color:#7aa7ad;
+  font-size:13px;
+  line-height:1.55;
+}
+.login-form{
+  display:grid;
+  grid-template-columns:1fr 1fr 150px;
+  gap:10px;
+  align-items:end;
+}
+.login-form label{
+  display:grid;
+  gap:6px;
+  color:#8eeef3;
+  font-size:11px;
+  letter-spacing:1px;
+}
+.login-form input{
+  width:100%;
+  border:1px solid rgba(0,246,255,.22);
+  border-radius:12px;
+  padding:13px 12px;
+  color:#eaffff;
+  background:rgba(0,0,0,.35);
+  outline:none;
+  font-family:inherit;
+  font-size:13px;
+  box-shadow:0 0 12px rgba(0,246,255,.06) inset;
+}
+.login-form input:focus{
+  border-color:rgba(125,252,255,.7);
+  box-shadow:0 0 16px rgba(0,246,255,.16);
+}
+.login-form button{
+  padding:13px 14px;
+  font-size:13px;
+  border-radius:12px;
+}
+.auth-logout{
+  padding:10px 12px;
+  font-size:12px;
+  border-radius:12px;
+}
+.session-box{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  padding:12px;
+  border:1px solid rgba(125,255,179,.18);
+  border-radius:12px;
+  color:#caffdf;
+  background:rgba(125,255,179,.04);
+}
+.session-label{
+  color:#7dffb3;
+  font-size:11px;
+  letter-spacing:2px;
+}
+#sessionSub{
+  color:#9fbfc3;
+  font-size:13px;
+}
+.auth-message{
+  margin-top:10px;
+  color:#6f8d92;
+  font-size:12px;
+  line-height:1.5;
+}
+.auth-message.error{color:#ff9aad;}
+.auth-message.ok{color:#9df8bd;}
+.auth-message.warn{color:#ffd86b;}
+.win-item small,
+.log-item .meta{
+  display:block;
+  margin-top:3px;
+  color:#7aa7ad;
+  font-size:11px;
+}
+
+@media (max-width:720px){
+  .login-form{grid-template-columns:1fr;}
+  .auth-head{display:grid;}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="particles" id="particles"></div>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="header">
+      <div>
+        <div class="sub">VoxTek Staff Benefit System</div>
+        <div class="title">DAILY STAFF DRAW</div>
+      </div>
+      <div class="warning">※ VOXTEK 직원 전용 · 1일 1회 추첨 ※</div>
+    </div>
+
+    <div class="auth-card" id="authCard">
+      <div class="auth-head">
+        <div>
+          <div class="card-title">EMPLOYEE LOGIN</div>
+          <div class="auth-desc">이름과 패스워드를 입력하세요.</div>
+        </div>
+        <button class="smallbtn auth-logout hidden" id="logoutBtn" type="button">LOGOUT</button>
+      </div>
+
+      <form class="login-form" id="loginForm">
+        <label>
+          <span>NAME</span>
+          <input id="nameInput" type="text" autocomplete="nickname" placeholder="직원명" required>
+        </label>
+        <label>
+          <span>PASSWORD</span>
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="패스워드" required>
+        </label>
+        <button id="loginBtn" type="submit">LOGIN</button>
+      </form>
+
+      <div class="session-box hidden" id="sessionBox">
+        <span class="session-label">SIGNED IN</span>
+        <b id="sessionUser">-</b>
+        <span id="sessionSub">오늘 추첨 가능 여부 확인 중...</span>
+      </div>
+
+      <div class="auth-message" id="authMessage">이름과 패스워드를 입력하면 추첨을 시작할 수 있습니다.</div>
+    </div>
+
+    <div class="statusbar">
+      <div class="badge">
+        <strong>STATUS</strong>
+        <span class="value" id="statusText">LOGIN</span>
+      </div>
+      <div class="badge">
+        <strong>TODAY LIMIT</strong>
+        <span class="value" id="remainingCount">LOGIN</span>
+      </div>
+      <div class="badge">
+        <strong>BLANK TICKETS</strong>
+        <span class="value" id="failCount">90</span>
+      </div>
+      <div class="badge">
+        <strong>REWARD TICKETS</strong>
+        <span class="value" id="winCount">10</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="screen" id="screen">
+          <div class="flash" id="flash"></div>
+          <div class="glitch-layer" id="glitchLayer"></div>
+
+          <div class="result-box">
+            <div class="label">DRAW RESULT</div>
+            <div class="result" id="result">LOGIN REQUIRED</div>
+            <div class="desc" id="desc">이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="drawBtn" disabled>START DRAW</button>
+          <button class="smallbtn" id="muteBtn">SOUND : ON</button>
+          <button class="dangerbtn" id="resetBtn">RESET DATA</button>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="card">
+          <div class="card-title">MY REWARD HISTORY</div>
+          <div class="win-list" id="winList">
+            <div class="empty">아직 획득한 보상이 없습니다.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">MY RECENT DRAW</div>
+          <div class="log-list" id="logList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">VOXTEK DAILY STAFF DRAW · 10 REWARD TICKETS / 90 BLANK TICKETS</div>
+  </div>
+</div>
+
+<script type="module">
+const DB_URL = "https://YOUR_PROJECT_ID.supabase.co";
+const DB_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
+const ACCESS_PASSWORD = "VOXTEK";
+const DRAW_TABLE = "staff_roulette_draws";
+const PAGE_KEY = "staff_daily_draw_name_login_v1";
+
+const DB_READY =
+  DB_URL.startsWith("https://") &&
+  !DB_URL.includes("YOUR_PROJECT_ID") &&
+  DB_ANON_KEY &&
+  !DB_ANON_KEY.includes("YOUR_ANON_PUBLIC_KEY");
+
+let db = null;
+const dbReadyPromise = DB_READY
+  ? import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm")
+    .then(module => {
+      db = module.createClient(DB_URL, DB_ANON_KEY);
+      return db;
+    })
+    .catch(error => {
+      console.error("Database client load failed", error);
+      db = null;
+      return null;
+    })
+  : Promise.resolve(null);
+
+const STORAGE_PREFIX = "voxtek_staff_daily_draw_name_login_v2";
+const COOKIE_SESSION_KEY = `${STORAGE_PREFIX}_session_name`;
+const SESSION_DAYS = 30;
+
+const prizeList = [
+  "연차 1일권",
+  "반차권",
+  "조기퇴근권",
+  "지각 면제권",
+  "커피 지원권",
+  "간식 지원권",
+  "점심 메뉴 선택권",
+  "업무 우선순위 조정권",
+  "보고서 제출 유예권",
+  "칭찬 메일 발송권"
+];
+
+const failTexts = [
+  "꽝",
+  "NO REWARD",
+  "MISS",
+  "PENDING",
+  "RETRY",
+  "NULL",
+  "ACCESS DENIED",
+  "NEXT TIME"
+];
+
+const prizeEffects = {
+  "연차 1일권": {
+    themeClass: "theme-gold",
+    screenClass: "effect-gold effect-burst",
+    desc: "정식 휴가 보상이 승인되었습니다. 사용 일정은 관리자 승인 후 확정됩니다.",
+    sound: "gold"
+  },
+  "반차권": {
+    themeClass: "theme-mint",
+    screenClass: "effect-mint effect-burst",
+    desc: "반일 휴가 보상이 승인되었습니다. 오전 또는 오후 중 하나를 선택할 수 있습니다.",
+    sound: "mint"
+  },
+  "조기퇴근권": {
+    themeClass: "theme-blue",
+    screenClass: "effect-blue effect-burst",
+    desc: "조기퇴근 권한이 승인되었습니다. 오늘의 핵심 업무 완료 후 사용 가능합니다.",
+    sound: "blue"
+  },
+  "지각 면제권": {
+    themeClass: "theme-violet",
+    screenClass: "effect-violet effect-burst",
+    desc: "1회 지각 기록 면제권이 지급되었습니다. 출근 기록 정정에 사용할 수 있습니다.",
+    sound: "violet"
+  },
+  "커피 지원권": {
+    themeClass: "theme-orange",
+    screenClass: "effect-orange effect-burst",
+    desc: "카페인 보급 예산이 승인되었습니다. 적당히 마시고 제대로 일하세요.",
+    sound: "orange"
+  },
+  "간식 지원권": {
+    themeClass: "theme-cute",
+    screenClass: "effect-cute effect-burst",
+    desc: "소규모 사내 간식 지원이 승인되었습니다. 당 충전 후 업무 효율을 회복하세요.",
+    sound: "cute"
+  },
+  "점심 메뉴 선택권": {
+    themeClass: "theme-mint",
+    screenClass: "effect-mint effect-burst",
+    desc: "점심 메뉴 우선 선택권이 지급되었습니다. 오늘의 식사 결정권은 당첨자에게 있습니다.",
+    sound: "mint"
+  },
+  "업무 우선순위 조정권": {
+    themeClass: "theme-blue",
+    screenClass: "effect-blue effect-burst",
+    desc: "긴급도가 낮은 업무 1건의 우선순위를 조정할 수 있습니다.",
+    sound: "blue"
+  },
+  "보고서 제출 유예권": {
+    themeClass: "theme-violet",
+    screenClass: "effect-violet effect-burst",
+    desc: "보고서 제출 기한 1회 유예권이 승인되었습니다. 남용 시 불이익을 받을 수 있습니다.",
+    sound: "violet"
+  },
+  "칭찬 메일 발송권": {
+    themeClass: "theme-gold",
+    screenClass: "effect-gold effect-burst",
+    desc: "사내 칭찬 메일 발송 권한이 승인되었습니다. 성과 홍보용으로 활용하세요.",
+    sound: "gold"
+  }
+};
+
+const resultEl = document.getElementById("result");
+const descEl = document.getElementById("desc");
+const drawBtn = document.getElementById("drawBtn");
+const muteBtn = document.getElementById("muteBtn");
+const resetBtn = document.getElementById("resetBtn");
+const flashEl = document.getElementById("flash");
+const glitchLayer = document.getElementById("glitchLayer");
+const logList = document.getElementById("logList");
+const winList = document.getElementById("winList");
+const remainingCountEl = document.getElementById("remainingCount");
+const failCountEl = document.getElementById("failCount");
+const winCountEl = document.getElementById("winCount");
+const statusTextEl = document.getElementById("statusText");
+const screenEl = document.getElementById("screen");
+const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const nameInput = document.getElementById("nameInput");
+const passwordInput = document.getElementById("passwordInput");
+const sessionBox = document.getElementById("sessionBox");
+const sessionUser = document.getElementById("sessionUser");
+const sessionSub = document.getElementById("sessionSub");
+const authMessage = document.getElementById("authMessage");
+
+let currentName = "";
+let myDraws = [];
+let ticketPool = [];
+let hasDrawnToday = false;
+let drawCountToday = 0;
+let isRolling = false;
+let soundOn = true;
+let audioCtx = null;
+
+function normalizeName(value){
+  return String(value || "").trim().replace(/\s+/g, " ");
+}
+
+function getNameKey(name = currentName){
+  return normalizeName(name).toLowerCase();
+}
+
+function getTodayKey(){
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone:"Asia/Seoul",
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit"
+  }).formatToParts(new Date());
+  const data = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${data.year}-${data.month}-${data.day}`;
+}
+
+function safeLocalGet(key){
+  try{
+    return localStorage.getItem(key);
+  }catch(error){
+    return null;
+  }
+}
+
+function safeLocalSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+  }catch(error){
+    console.warn("Local storage save failed", error);
+  }
+}
+
+function safeLocalRemove(key){
+  try{
+    localStorage.removeItem(key);
+  }catch(error){
+    console.warn("Local storage remove failed", error);
+  }
+}
+
+function loadJson(key, fallback){
+  try{
+    const raw = safeLocalGet(key);
+    if(!raw) return fallback;
+    return JSON.parse(raw);
+  }catch(error){
+    return fallback;
+  }
+}
+
+function saveJson(key, value){
+  safeLocalSet(key, JSON.stringify(value));
+}
+
+function setCookie(name, value, days = SESSION_DAYS){
+  try{
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  }catch(error){
+    console.warn("Cookie save failed", error);
+  }
+}
+
+function getCookie(name){
+  try{
+    const target = `${encodeURIComponent(name)}=`;
+    const cookies = document.cookie ? document.cookie.split("; ") : [];
+    const found = cookies.find(cookie => cookie.startsWith(target));
+    return found ? decodeURIComponent(found.slice(target.length)) : "";
+  }catch(error){
+    return "";
+  }
+}
+
+function deleteCookie(name){
+  try{
+    document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+  }catch(error){
+    console.warn("Cookie delete failed", error);
+  }
+}
+
+function getDrawCacheKey(name = currentName){
+  return `${STORAGE_PREFIX}:draws:${getNameKey(name)}`;
+}
+
+function getScreenCacheKey(name = currentName){
+  return `${STORAGE_PREFIX}:screen:${getNameKey(name)}`;
+}
+
+function getOverrideKey(){
+  if(!currentName) return "";
+  return `${STORAGE_PREFIX}:reset:${getNameKey()}:${getTodayKey()}`;
+}
+
+function getGlobalResetCutoffKey(){
+  return `${STORAGE_PREFIX}:global_reset_cutoff`;
+}
+
+function getResetCutoffKey(name = currentName){
+  return `${STORAGE_PREFIX}:reset_cutoff:${getNameKey(name)}`;
+}
+
+function getEffectiveResetCutoff(name = currentName){
+  const globalCutoff = safeLocalGet(getGlobalResetCutoffKey());
+  const userCutoff = safeLocalGet(getResetCutoffKey(name));
+  const list = [globalCutoff, userCutoff]
+    .filter(Boolean)
+    .map(value => ({ value, time: new Date(value).getTime() }))
+    .filter(item => Number.isFinite(item.time));
+
+  if(list.length === 0) return "";
+  list.sort((a, b) => b.time - a.time);
+  return list[0].value;
+}
+
+function setGlobalResetCutoff(){
+  safeLocalSet(getGlobalResetCutoffKey(), new Date().toISOString());
+}
+
+function applyResetCutoff(draws, name = currentName){
+  const cutoff = getEffectiveResetCutoff(name);
+  if(!cutoff) return Array.isArray(draws) ? draws : [];
+
+  const cutoffTime = new Date(cutoff).getTime();
+  if(!Number.isFinite(cutoffTime)) return Array.isArray(draws) ? draws : [];
+
+  return (Array.isArray(draws) ? draws : []).filter(item => {
+    const drawTime = new Date(item.draw_at || 0).getTime();
+    return Number.isFinite(drawTime) && drawTime > cutoffTime;
+  });
+}
+
+function isResetOverrideActive(){
+  const key = getOverrideKey();
+  return key ? safeLocalGet(key) === "1" : false;
+}
+
+function consumeResetOverride(){
+  const key = getOverrideKey();
+  if(key) safeLocalRemove(key);
+}
+
+function saveSession(name){
+  const normalized = normalizeName(name);
+  setCookie(COOKIE_SESSION_KEY, normalized, SESSION_DAYS);
+  safeLocalSet(`${STORAGE_PREFIX}:active_session`, normalized);
+  safeLocalSet(`${STORAGE_PREFIX}:last_name`, normalized);
+}
+
+function clearSession(){
+  deleteCookie(COOKIE_SESSION_KEY);
+  safeLocalRemove(`${STORAGE_PREFIX}:active_session`);
+}
+
+function setAuthMessage(text, type = ""){
+  authMessage.textContent = text;
+  authMessage.className = `auth-message ${type}`.trim();
+}
+
+function getDisplayDateTime(iso){
+  if(!iso) return "-";
+  const date = new Date(iso);
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone:"Asia/Seoul",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:false
+  }).format(date);
+}
+
+function updateTodayState(){
+  const today = getTodayKey();
+  drawCountToday = myDraws.filter(item => item.draw_date === today).length;
+  hasDrawnToday = drawCountToday > 0;
+}
+
+function saveDrawCache(){
+  if(!currentName) return;
+  const clean = myDraws.slice(0, 80);
+  saveJson(getDrawCacheKey(), clean);
+}
+
+function loadDrawCache(name = currentName){
+  const cached = loadJson(getDrawCacheKey(name), []);
+  return applyResetCutoff(Array.isArray(cached) ? cached : [], name);
+}
+
+function makeLooseRecordKey(item){
+  return [
+    normalizeName(item.employee_name),
+    item.draw_date,
+    item.result_type,
+    item.result_label,
+    item.result_display,
+    item.ticket_number
+  ].join("|");
+}
+
+function mergeDraws(remoteDraws, cachedDraws){
+  const merged = [];
+  const remote = Array.isArray(remoteDraws) ? remoteDraws.map(item => ({...item, synced:true})) : [];
+  const cached = Array.isArray(cachedDraws) ? cachedDraws : [];
+
+  for(const item of remote){
+    merged.push(item);
+  }
+
+  for(const item of cached){
+    const sameId = item.id && merged.some(target => String(target.id) === String(item.id));
+    if(sameId) continue;
+
+    const itemTime = new Date(item.draw_at || 0).getTime();
+    const sameRecord = merged.some(target => {
+      if(makeLooseRecordKey(target) !== makeLooseRecordKey(item)) return false;
+      const targetTime = new Date(target.draw_at || 0).getTime();
+      return Number.isFinite(itemTime) && Number.isFinite(targetTime) && Math.abs(targetTime - itemTime) < 15000;
+    });
+
+    if(!sameRecord) merged.push(item);
+  }
+
+  merged.sort((a, b) => new Date(b.draw_at || 0) - new Date(a.draw_at || 0));
+  return applyResetCutoff(merged.slice(0, 80));
+}
+
+function getPoolCacheKey(){
+  return `${STORAGE_PREFIX}:ticket_pool`;
+}
+
+function getDefaultTicketPool(){
+  const initialPool = [];
+
+  for(let i = 0; i < 90; i++){
+    initialPool.push({
+      type:"fail",
+      label:"꽝",
+      ticketNumber:i + 1
+    });
+  }
+
+  prizeList.forEach((prize, index) => {
+    initialPool.push({
+      type:"win",
+      label:prize,
+      ticketNumber:91 + index
+    });
+  });
+
+  return initialPool;
+}
+
+function isValidTicketPool(value){
+  return Array.isArray(value) && value.every(item =>
+    item &&
+    (item.type === "win" || item.type === "fail") &&
+    typeof item.label === "string"
+  );
+}
+
+function loadTicketPool(){
+  const cached = loadJson(getPoolCacheKey(), null);
+  if(isValidTicketPool(cached)){
+    ticketPool = cached;
+  }else{
+    ticketPool = getDefaultTicketPool();
+    saveTicketPool();
+  }
+}
+
+function saveTicketPool(){
+  saveJson(getPoolCacheKey(), ticketPool);
+}
+
+function resetTicketPool(){
+  ticketPool = getDefaultTicketPool();
+  saveTicketPool();
+}
+
+function getTicketCounts(){
+  if(!isValidTicketPool(ticketPool)){
+    ticketPool = getDefaultTicketPool();
+    saveTicketPool();
+  }
+
+  return {
+    totalLeft: ticketPool.length,
+    failLeft: ticketPool.filter(item => item.type === "fail").length,
+    winLeft: ticketPool.filter(item => item.type === "win").length
+  };
+}
+
+function updateTicketCounters(){
+  const counts = getTicketCounts();
+  failCountEl.textContent = counts.failLeft;
+  winCountEl.textContent = counts.winLeft;
+  return counts;
+}
+
+function drawFromTicketPool(){
+  if(!isValidTicketPool(ticketPool)){
+    loadTicketPool();
+  }
+
+  if(ticketPool.length === 0) return null;
+
+  const index = Math.floor(Math.random() * ticketPool.length);
+  const picked = ticketPool[index];
+  ticketPool.splice(index, 1);
+  saveTicketPool();
+
+  if(picked.type === "win"){
+    return {
+      type:"win",
+      label:picked.label,
+      display:picked.label,
+      ticketNumber:picked.ticketNumber
+    };
+  }
+
+  const fail = randomFrom(failTexts);
+  return {
+    type:"fail",
+    label:"꽝",
+    display:fail,
+    ticketNumber:picked.ticketNumber
+  };
+}
+
+function clearLocalDrawData(){
+  try{
+    const keysToRemove = [];
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(!key) continue;
+
+      const shouldRemove =
+        key.startsWith(`${STORAGE_PREFIX}:draws:`) ||
+        key.startsWith(`${STORAGE_PREFIX}:screen:`) ||
+        key.startsWith(`${STORAGE_PREFIX}:reset:`) ||
+        key.startsWith(`${STORAGE_PREFIX}:reset_cutoff:`);
+
+      if(shouldRemove) keysToRemove.push(key);
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  }catch(error){
+    console.warn("Local draw data reset failed", error);
+  }
+}
+
+function saveScreenState(record, descText){
+  if(!currentName || !record) return;
+  const state = {
+    text: record.result_display || record.result_label,
+    desc: descText || record.result_desc || "",
+    resultType: record.result_type,
+    prize: record.result_label,
+    savedAt: new Date().toISOString()
+  };
+  saveJson(getScreenCacheKey(), state);
+}
+
+function restoreScreenState(name = currentName){
+  const state = loadJson(getScreenCacheKey(name), null);
+  if(!state || !state.text) return false;
+
+  clearResultTheme();
+  resultEl.className = "result";
+
+  if(state.resultType === "win"){
+    resultEl.classList.add("win");
+    applyPrizeTheme(state.prize);
+  }else if(state.resultType === "fail"){
+    resultEl.classList.add("lose");
+  }
+
+  resultEl.textContent = state.text;
+  descEl.textContent = state.desc || "이전 추첨 결과를 불러왔습니다.";
+  return true;
+}
+
+function showDefaultReadyScreen(){
+  clearResultTheme();
+  resultEl.className = "result";
+
+  if(currentName && hasDrawnToday && !isResetOverrideActive()){
+    resultEl.classList.add("lose");
+    resultEl.textContent = "TODAY CLOSED";
+    descEl.textContent = "오늘은 이미 추첨을 완료했습니다.";
+    return;
+  }
+
+  resultEl.textContent = currentName ? "READY" : "LOGIN REQUIRED";
+  descEl.textContent = currentName
+    ? "오늘의 직원 복지 추첨 준비가 완료되었습니다."
+    : "이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.";
+}
+
+function renderWinList(){
+  winList.innerHTML = "";
+  const wins = myDraws.filter(item => item.result_type === "win");
+
+  if(wins.length === 0){
+    const div = document.createElement("div");
+    div.className = "empty";
+    div.textContent = "아직 획득한 보상이 없습니다.";
+    winList.appendChild(div);
+    return;
+  }
+
+  wins.slice(0, 12).forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = "win-item";
+    div.innerHTML = `<span class="index">${index + 1}.</span><span>${escapeHtml(item.result_label)}<small>${escapeHtml(getDisplayDateTime(item.draw_at))}</small></span>`;
+    winList.appendChild(div);
+  });
+}
+
+function renderLogs(){
+  logList.innerHTML = "";
+
+  if(myDraws.length === 0){
+    const div = document.createElement("div");
+    div.className = "empty";
+    div.textContent = "아직 기록이 없습니다.";
+    logList.appendChild(div);
+    return;
+  }
+
+  myDraws.slice(0, 8).forEach(item => {
+    const isWin = item.result_type === "win";
+    const div = document.createElement("div");
+    div.className = `log-item ${isWin ? "win" : "lose"}`;
+    div.innerHTML = `<span>${escapeHtml(getDisplayDateTime(item.draw_at))}</span><b>${escapeHtml(item.result_display || item.result_label)}</b><span>${isWin ? "WIN" : "MISS"}</span>`;
+    logList.appendChild(div);
+  });
+}
+
+function updateAccessUI(){
+  const counts = updateTicketCounters();
+
+  if(!currentName){
+    statusTextEl.textContent = "LOGIN";
+    remainingCountEl.textContent = "LOGIN";
+    drawBtn.disabled = true;
+    drawBtn.textContent = "START DRAW";
+    sessionSub.textContent = "이름과 패스워드를 입력하세요.";
+    return;
+  }
+
+  if(counts.totalLeft === 0){
+    statusTextEl.textContent = "COMPLETE";
+    remainingCountEl.textContent = "0 LEFT";
+    drawBtn.disabled = true;
+    drawBtn.textContent = "DRAW CLOSED";
+    sessionSub.textContent = "모든 추첨권이 소진되었습니다.";
+    return;
+  }
+
+  if(isRolling){
+    statusTextEl.textContent = "PROCESSING";
+    remainingCountEl.textContent = "CHECKING";
+    drawBtn.disabled = true;
+    drawBtn.textContent = "PROCESSING...";
+    return;
+  }
+
+  if(hasDrawnToday && !isResetOverrideActive()){
+    statusTextEl.textContent = "CLOSED";
+    remainingCountEl.textContent = "USED";
+    drawBtn.disabled = true;
+    drawBtn.textContent = "TODAY CLOSED";
+    sessionSub.textContent = `오늘 추첨 완료 · ${drawCountToday}회 기록`;
+    return;
+  }
+
+  statusTextEl.textContent = "READY";
+  remainingCountEl.textContent = isResetOverrideActive() ? "RESET READY" : "1 / DAY";
+  drawBtn.disabled = false;
+  drawBtn.textContent = "START DRAW";
+  sessionSub.textContent = isResetOverrideActive()
+    ? "초기화 적용 완료 · 추가 추첨 가능"
+    : "오늘 추첨 가능";
+}
+
+function applyCachedDraws(name = currentName){
+  myDraws = loadDrawCache(name);
+  updateTodayState();
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+}
+
+async function refreshMyDraws({ silent = false } = {}){
+  if(!currentName){
+    myDraws = [];
+    hasDrawnToday = false;
+    drawCountToday = 0;
+    renderWinList();
+    renderLogs();
+    updateAccessUI();
+    return false;
+  }
+
+  const cached = loadDrawCache();
+  if(cached.length > 0 || !db){
+    myDraws = cached;
+    updateTodayState();
+    renderWinList();
+    renderLogs();
+    updateAccessUI();
+  }
+
+  if(!db){
+    return true;
+  }
+
+  const { data, error } = await db
+    .from(DRAW_TABLE)
+    .select("id, employee_name, result_type, result_label, result_display, result_desc, draw_date, draw_at, reset_override, ticket_number")
+    .eq("page_key", PAGE_KEY)
+    .eq("employee_name", currentName)
+    .order("draw_at", { ascending:false })
+    .limit(80);
+
+  if(error){
+    if(!silent){
+      setAuthMessage("기록 확인에 실패했습니다. 저장된 기록을 표시합니다.", "warn");
+    }
+    return true;
+  }
+
+  myDraws = applyResetCutoff(mergeDraws(data, cached));
+  saveDrawCache();
+  updateTodayState();
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+  return true;
+}
+
+function makeDrawResult(){
+  return drawFromTicketPool();
+}
+
+function buildDrawRecord(result, resultDesc){
+  return {
+    local_id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    employee_name: currentName,
+    result_type: result.type,
+    result_label: result.label,
+    result_display: result.display,
+    result_desc: resultDesc,
+    draw_date: getTodayKey(),
+    draw_at: new Date().toISOString(),
+    reset_override: isResetOverrideActive(),
+    ticket_number: result.ticketNumber,
+    page_key: PAGE_KEY,
+    synced:false
+  };
+}
+
+function addLocalDrawRecord(record){
+  myDraws.unshift(record);
+  myDraws = mergeDraws([], myDraws);
+  saveDrawCache();
+  updateTodayState();
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+}
+
+async function saveDrawRecord(record){
+  if(!db) return false;
+
+  const payload = {
+    employee_name: record.employee_name,
+    result_type: record.result_type,
+    result_label: record.result_label,
+    result_display: record.result_display,
+    result_desc: record.result_desc,
+    draw_date: record.draw_date,
+    draw_at: record.draw_at,
+    reset_override: record.reset_override,
+    ticket_number: record.ticket_number,
+    page_key: PAGE_KEY,
+    user_agent: navigator.userAgent.slice(0, 240)
+  };
+
+  const { error } = await db.from(DRAW_TABLE).insert(payload);
+  if(error) throw error;
+  return true;
+}
+
+function initAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function beep({
+  freq = 440,
+  duration = 0.08,
+  type = "square",
+  volume = 0.03,
+  slideTo = null
+} = {}){
+  if(!soundOn) return;
+  initAudio();
+
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, now);
+
+  if(slideTo){
+    osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+  }
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc.stop(now + duration + 0.02);
+}
+
+function playClickSound(){
+  beep({freq:560, duration:0.03, type:"square", volume:0.04, slideTo:420});
+  setTimeout(() => beep({freq:740, duration:0.05, type:"square", volume:0.03, slideTo:620}), 25);
+}
+
+function playRollSound(step = 0){
+  const base = 240 + (step % 8) * 35;
+  beep({freq:base, duration:0.035, type:"sawtooth", volume:0.018, slideTo:base + 25});
+}
+
+function playLoseSound(){
+  beep({freq:260, duration:0.08, type:"square", volume:0.04, slideTo:200});
+  setTimeout(() => beep({freq:170, duration:0.14, type:"triangle", volume:0.03, slideTo:120}), 70);
+}
+
+function playWinSound(){
+  beep({freq:420, duration:0.07, type:"triangle", volume:0.045, slideTo:580});
+  setTimeout(() => beep({freq:620, duration:0.08, type:"triangle", volume:0.045, slideTo:860}), 80);
+  setTimeout(() => beep({freq:860, duration:0.12, type:"triangle", volume:0.04, slideTo:1220}), 160);
+}
+
+function playPrizeSound(kind){
+  if(kind === "gold"){
+    beep({freq:520, duration:0.05, type:"triangle", volume:0.05, slideTo:740});
+    setTimeout(() => beep({freq:760, duration:0.08, type:"triangle", volume:0.05, slideTo:1180}), 80);
+    setTimeout(() => beep({freq:1180, duration:0.14, type:"triangle", volume:0.05, slideTo:1560}), 180);
+    return;
+  }
+
+  if(kind === "violet"){
+    beep({freq:320, duration:0.06, type:"sawtooth", volume:0.045, slideTo:520});
+    setTimeout(() => beep({freq:520, duration:0.09, type:"triangle", volume:0.04, slideTo:900}), 70);
+    return;
+  }
+
+  if(kind === "cute"){
+    beep({freq:700, duration:0.04, type:"square", volume:0.04, slideTo:860});
+    setTimeout(() => beep({freq:880, duration:0.05, type:"square", volume:0.035, slideTo:1100}), 55);
+    setTimeout(() => beep({freq:1020, duration:0.05, type:"triangle", volume:0.03, slideTo:1260}), 115);
+    return;
+  }
+
+  if(kind === "mint"){
+    beep({freq:480, duration:0.05, type:"triangle", volume:0.04, slideTo:650});
+    setTimeout(() => beep({freq:650, duration:0.07, type:"triangle", volume:0.035, slideTo:820}), 75);
+    return;
+  }
+
+  if(kind === "orange"){
+    beep({freq:390, duration:0.05, type:"square", volume:0.04, slideTo:520});
+    setTimeout(() => beep({freq:560, duration:0.08, type:"sawtooth", volume:0.03, slideTo:710}), 60);
+    return;
+  }
+
+  if(kind === "blue"){
+    beep({freq:430, duration:0.05, type:"triangle", volume:0.04, slideTo:580});
+    setTimeout(() => beep({freq:600, duration:0.07, type:"triangle", volume:0.035, slideTo:760}), 80);
+    return;
+  }
+
+  playWinSound();
+}
+
+function randomFrom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function flash(){
+  flashEl.classList.remove("active");
+  void flashEl.offsetWidth;
+  flashEl.classList.add("active");
+}
+
+function glitch(){
+  glitchLayer.classList.remove("active");
+  void glitchLayer.offsetWidth;
+  glitchLayer.classList.add("active");
+}
+
+function clearResultTheme(){
+  resultEl.classList.remove(
+    "theme-violent",
+    "theme-cute",
+    "theme-mint",
+    "theme-violet",
+    "theme-gold",
+    "theme-orange",
+    "theme-blue"
+  );
+
+  screenEl.classList.remove(
+    "effect-violent",
+    "effect-cute",
+    "effect-mint",
+    "effect-violet",
+    "effect-gold",
+    "effect-orange",
+    "effect-blue",
+    "effect-burst"
+  );
+}
+
+function applyPrizeTheme(prize){
+  clearResultTheme();
+
+  const effect = prizeEffects[prize];
+  if(!effect) return;
+
+  if(effect.themeClass){
+    resultEl.classList.add(...effect.themeClass.split(" "));
+  }
+  if(effect.screenClass){
+    screenEl.classList.add(...effect.screenClass.split(" "));
+  }
+}
+
+async function rollAnimation(){
+  const totalSteps = 22;
+  clearResultTheme();
+  resultEl.className = "result rolling";
+  descEl.textContent = "직원 보상 추첨 중......";
+
+  for(let i = 0; i < totalSteps; i++){
+    resultEl.textContent = randomFrom([...failTexts, ...prizeList]);
+    playRollSound(i);
+    if(i % 4 === 0) glitch();
+    const delay = 45 + i * 9;
+    await new Promise(r => setTimeout(r, delay));
+  }
+}
+
+async function draw(){
+  if(isRolling) return;
+
+  if(!currentName){
+    setAuthMessage("먼저 로그인하세요.", "warn");
+    return;
+  }
+
+  await refreshMyDraws({ silent:true });
+
+  if(hasDrawnToday && !isResetOverrideActive()){
+    clearResultTheme();
+    resultEl.className = "result lose";
+    resultEl.textContent = "TODAY CLOSED";
+    descEl.textContent = "오늘은 이미 추첨을 완료했습니다.";
+    updateAccessUI();
+    return;
+  }
+
+  isRolling = true;
+  updateAccessUI();
+
+  playClickSound();
+  drawBtn.disabled = true;
+  drawBtn.textContent = "PROCESSING...";
+
+  await rollAnimation();
+
+  const picked = makeDrawResult();
+  resultEl.className = "result";
+  flash();
+  glitch();
+
+  if(!picked){
+    clearResultTheme();
+    resultEl.classList.add("lose");
+    resultEl.textContent = "DRAW CLOSED";
+    descEl.textContent = "모든 추첨권이 소진되었습니다.";
+    isRolling = false;
+    updateAccessUI();
+    return;
+  }
+
+  let finalDesc = "";
+
+  if(picked.type === "win"){
+    const effect = prizeEffects[picked.label] || null;
+    resultEl.classList.add("win");
+    applyPrizeTheme(picked.label);
+    resultEl.textContent = picked.label;
+    finalDesc = effect ? effect.desc : "당첨되었습니다. 유효한 보상이 승인되었습니다.";
+    descEl.textContent = finalDesc;
+
+    if(effect){
+      playPrizeSound(effect.sound);
+    }else{
+      playWinSound();
+    }
+  }else{
+    clearResultTheme();
+    resultEl.classList.add("lose");
+    resultEl.textContent = picked.display;
+    finalDesc = "이번 회차에서는 지급 가능한 보상이 없습니다.";
+    descEl.textContent = finalDesc;
+    playLoseSound();
+  }
+
+  const record = buildDrawRecord(picked, finalDesc);
+  addLocalDrawRecord(record);
+  saveScreenState(record, finalDesc);
+  consumeResetOverride();
+  setAuthMessage("추첨 완료.", picked.type === "win" ? "ok" : "warn");
+
+  try{
+    await saveDrawRecord(record);
+    await refreshMyDraws({ silent:true });
+  }catch(error){
+    console.error(error);
+  }finally{
+    isRolling = false;
+    updateTodayState();
+    renderWinList();
+    renderLogs();
+    updateAccessUI();
+  }
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function activateSession(name, { message = "로그인 완료.", silent = false } = {}){
+  currentName = normalizeName(name);
+  if(!currentName) return;
+
+  saveSession(currentName);
+  nameInput.value = currentName;
+  sessionUser.textContent = currentName;
+  loginForm.classList.add("hidden");
+  logoutBtn.classList.remove("hidden");
+  sessionBox.classList.remove("hidden");
+  passwordInput.value = "";
+
+  loadTicketPool();
+  applyCachedDraws(currentName);
+
+  if(!restoreScreenState(currentName)){
+    showDefaultReadyScreen();
+  }
+
+  if(!silent){
+    setAuthMessage(message, "ok");
+  }else{
+    setAuthMessage("이전 접속 정보를 불러왔습니다.", "ok");
+  }
+
+  refreshMyDraws({ silent:true }).then(() => {
+    if(!restoreScreenState(currentName)){
+      showDefaultReadyScreen();
+    }
+  });
+}
+
+drawBtn.addEventListener("click", draw);
+
+muteBtn.addEventListener("click", () => {
+  soundOn = !soundOn;
+  muteBtn.textContent = `SOUND : ${soundOn ? "ON" : "OFF"}`;
+  if(soundOn) playClickSound();
+});
+
+resetBtn.addEventListener("click", () => {
+  if(!currentName){
+    setAuthMessage("먼저 로그인하세요.", "warn");
+    return;
+  }
+
+  const ok = confirm("이 기기의 추첨 데이터를 초기화할까요?\n남은 추첨권과 화면 히스토리가 처음 상태로 돌아갑니다.");
+  if(!ok) return;
+
+  clearLocalDrawData();
+  setGlobalResetCutoff();
+  resetTicketPool();
+  safeLocalSet(getOverrideKey(), "1");
+  safeLocalRemove(getScreenCacheKey());
+
+  myDraws = [];
+  hasDrawnToday = false;
+  drawCountToday = 0;
+
+  renderWinList();
+  renderLogs();
+  clearResultTheme();
+  resultEl.className = "result";
+  resultEl.textContent = "RESET READY";
+  descEl.textContent = "초기화가 적용되었습니다. 남은 추첨권과 기록 표시가 처음 상태로 돌아갔습니다.";
+  setAuthMessage("초기화 완료. 추가 추첨 가능.", "warn");
+  updateAccessUI();
+});
+
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const name = normalizeName(nameInput.value);
+  const password = passwordInput.value;
+
+  if(!name){
+    setAuthMessage("이름을 입력하세요.", "warn");
+    return;
+  }
+
+  if(password !== ACCESS_PASSWORD){
+    setAuthMessage("패스워드가 맞지 않습니다.", "error");
+    passwordInput.value = "";
+    passwordInput.focus();
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "CHECKING...";
+  setAuthMessage("접속 확인 중...", "warn");
+
+  activateSession(name, { message:"로그인 완료." });
+  await refreshMyDraws({ silent:true });
+
+  loginBtn.disabled = false;
+  loginBtn.textContent = "LOGIN";
+});
+
+logoutBtn.addEventListener("click", () => {
+  clearSession();
+  currentName = "";
+  myDraws = [];
+  hasDrawnToday = false;
+  drawCountToday = 0;
+  loginForm.classList.remove("hidden");
+  logoutBtn.classList.add("hidden");
+  sessionBox.classList.add("hidden");
+  clearResultTheme();
+  resultEl.className = "result";
+  resultEl.textContent = "LOGIN REQUIRED";
+  descEl.textContent = "이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.";
+  setAuthMessage("로그아웃되었습니다.", "warn");
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+});
+
+function createParticles(){
+  const container = document.getElementById("particles");
+  for(let i = 0; i < 18; i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.top = (-120 - Math.random() * 500) + "px";
+    p.style.height = (40 + Math.random() * 100) + "px";
+    p.style.animationDuration = (5 + Math.random() * 7) + "s";
+    p.style.animationDelay = (-Math.random() * 10) + "s";
+    p.style.opacity = 0.12 + Math.random() * 0.28;
+    container.appendChild(p);
+  }
+}
+
+function boot(){
+  createParticles();
+  loadTicketPool();
+
+  const savedSession = normalizeName(getCookie(COOKIE_SESSION_KEY) || safeLocalGet(`${STORAGE_PREFIX}:active_session`));
+  const savedName = normalizeName(safeLocalGet(`${STORAGE_PREFIX}:last_name`));
+
+  if(savedSession){
+    activateSession(savedSession, { silent:true });
+    return;
+  }
+
+  if(savedName){
+    nameInput.value = savedName;
+  }
+
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+}
+
+boot();
+
+dbReadyPromise.then(() => {
+  if(currentName && db){
+    refreshMyDraws({ silent:true });
+  }
+});
+</script>
+</body>
+</html>
