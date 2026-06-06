@@ -2458,7 +2458,7 @@ resetBtn.addEventListener("click", () => {
     return;
   }
 
-  const ok = confirm("이 기기의 추첨 데이터를 초기화할까요?\n남은 추첨권과 화면 히스토리가 처음 상태로 돌아갑니다.\n※ Supabase에 저장된 기존 기록은 SQL Editor에서 별도로 삭제해야 합니다.");
+  const ok = confirm("이 기기의 추첨 데이터를 초기화할까요?\n남은 추첨권과 화면 히스토리가 처음 상태로 돌아갑니다.");
   if(!ok) return;
 
   clearLocalDrawData();
