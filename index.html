@@ -2362,7 +2362,7 @@ async function draw(){
   if(picked.type === "win" && picked.label === "칭찬 메일 발송권"){
     const mailed = queuePraiseMail(record);
     if(mailed){
-      record.result_desc = `${finalDesc} 포털 메일함에 칭찬 메일이 자동 발송되었습니다.`;
+      record.result_desc = `${finalDesc} 포털 메일함에 칭찬 메일이 발송되었습니다.`;
       descEl.textContent = record.result_desc;
     }
   }
