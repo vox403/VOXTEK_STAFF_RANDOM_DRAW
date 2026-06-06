@@ -1082,12 +1082,12 @@ button:disabled{
       <div class="auth-head">
         <div>
           <div class="card-title">EMPLOYEE LOGIN</div>
-          <div class="auth-desc">이름과 패스워드를 입력하세요.</div>
+          <div class="auth-desc">VOXTEK 포털 계정으로 접속합니다.</div>
         </div>
-        <button class="smallbtn auth-logout hidden" id="logoutBtn" type="button">LOGOUT</button>
+        <button class="smallbtn auth-logout hidden" id="logoutBtn" type="button">PORTAL</button>
       </div>
 
-      <form class="login-form" id="loginForm">
+      <form class="login-form hidden" id="loginForm">
         <label>
           <span>NAME</span>
           <input id="nameInput" type="text" autocomplete="nickname" placeholder="직원명" required>
@@ -1105,7 +1105,7 @@ button:disabled{
         <span id="sessionSub">오늘 추첨 가능 여부 확인 중...</span>
       </div>
 
-      <div class="auth-message" id="authMessage">이름과 패스워드를 입력하면 추첨을 시작할 수 있습니다.</div>
+      <div class="auth-message" id="authMessage">VOXTEK 포털 로그인 정보를 확인 중입니다.</div>
     </div>
 
     <div class="statusbar">
@@ -1119,11 +1119,11 @@ button:disabled{
       </div>
       <div class="badge">
         <strong>BLANK TICKETS</strong>
-        <span class="value" id="failCount">90</span>
+        <span class="value" id="failCount">85</span>
       </div>
       <div class="badge">
         <strong>REWARD TICKETS</strong>
-        <span class="value" id="winCount">10</span>
+        <span class="value" id="winCount">15</span>
       </div>
     </div>
 
@@ -1135,8 +1135,8 @@ button:disabled{
 
           <div class="result-box">
             <div class="label">DRAW RESULT</div>
-            <div class="result" id="result">LOGIN REQUIRED</div>
-            <div class="desc" id="desc">이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.</div>
+            <div class="result" id="result">PORTAL CHECK</div>
+            <div class="desc" id="desc">VOXTEK 포털 계정 정보를 확인하고 있습니다.</div>
           </div>
         </div>
 
@@ -1162,14 +1162,15 @@ button:disabled{
       </div>
     </div>
 
-    <div class="footer-note">VOXTEK DAILY STAFF DRAW · 10 REWARD TICKETS / 90 BLANK TICKETS</div>
+    <div class="footer-note">VOXTEK DAILY STAFF DRAW · 15 REWARD TICKETS / 85 BLANK TICKETS</div>
   </div>
 </div>
 
 <script type="module">
 const DB_URL = "https://gvuhbxpkmyiakyfhuish.supabase.co";
 const DB_ANON_KEY = "sb_publishable_uCymLmzy-3NR9JyOL-9DtA_HmkGb0-k";
-const ACCESS_PASSWORD = "VOXTEK";
+const PORTAL_URL = "https://vox403.github.io/867988/";
+const PORTAL_STORAGE_KEY = "voxtek_employee_v1";
 const DRAW_TABLE = "staff_roulette_draws";
 const PAGE_KEY = "staff_daily_draw_name_login_v1";
 
@@ -1193,22 +1194,34 @@ const dbReadyPromise = DB_READY
     })
   : Promise.resolve(null);
 
-const STORAGE_PREFIX = "voxtek_staff_daily_draw_name_login_v2";
-const COOKIE_SESSION_KEY = `${STORAGE_PREFIX}_session_name`;
+const STORAGE_PREFIX = "voxtek_staff_daily_draw_portal_v3";
+const COOKIE_SESSION_KEY = `${STORAGE_PREFIX}_legacy_session_name`;
 const SESSION_DAYS = 30;
+const POOL_VERSION = "reward15_fail85_20260607";
+const FAIL_TICKET_TOTAL = 85;
+const REWARD_TICKET_TOTAL = 15;
+const TOTAL_TICKET_COUNT = FAIL_TICKET_TOTAL + REWARD_TICKET_TOTAL;
+const EXTERNAL_MAIL_KEY = "voxtek_external_mail_items_v1";
 
-const prizeList = [
+const rewardTickets = [
   "연차 1일권",
   "반차권",
   "조기퇴근권",
   "지각 면제권",
-  "커피 지원권",
+  "지각 면제권",
   "간식 지원권",
+  "간식 지원권",
+  "점심 메뉴 선택권",
   "점심 메뉴 선택권",
   "업무 우선순위 조정권",
   "보고서 제출 유예권",
-  "칭찬 메일 발송권"
+  "칭찬 메일 발송권",
+  "테슬라 지급권",
+  "복스테크 상품 50% 할인권",
+  "복스테크 상품 50% 할인권"
 ];
+
+const prizeList = [...new Set(rewardTickets)];
 
 const failTexts = [
   "꽝",
@@ -1246,12 +1259,6 @@ const prizeEffects = {
     desc: "1회 지각 기록 면제권이 지급되었습니다. 출근 기록 정정에 사용할 수 있습니다.",
     sound: "violet"
   },
-  "커피 지원권": {
-    themeClass: "theme-orange",
-    screenClass: "effect-orange effect-burst",
-    desc: "카페인 보급 예산이 승인되었습니다. 적당히 마시고 제대로 일하세요.",
-    sound: "orange"
-  },
   "간식 지원권": {
     themeClass: "theme-cute",
     screenClass: "effect-cute effect-burst",
@@ -1281,6 +1288,18 @@ const prizeEffects = {
     screenClass: "effect-gold effect-burst",
     desc: "사내 칭찬 메일 발송 권한이 승인되었습니다. 성과 홍보용으로 활용하세요.",
     sound: "gold"
+  },
+  "테슬라 지급권": {
+    themeClass: "theme-violent",
+    screenClass: "effect-violent effect-burst",
+    desc: "테슬라 지급권이 승인되었습니다. 지급 범위와 해석은 복스테크 내부 기준을 따릅니다.",
+    sound: "gold"
+  },
+  "복스테크 상품 50% 할인권": {
+    themeClass: "theme-mint",
+    screenClass: "effect-mint effect-burst",
+    desc: "복스테크 상품 50% 할인 권한이 발급되었습니다. 복스테크가 엄선한 프리미엄 상품 구매 시 사용할 수 있습니다.",
+    sound: "mint"
   }
 };
 
@@ -1309,6 +1328,7 @@ const sessionSub = document.getElementById("sessionSub");
 const authMessage = document.getElementById("authMessage");
 
 let currentName = "";
+let currentEmployee = null;
 let myDraws = [];
 let ticketPool = [];
 let hasDrawnToday = false;
@@ -1335,6 +1355,59 @@ function getTodayKey(){
   const data = Object.fromEntries(parts.map(part => [part.type, part.value]));
   return `${data.year}-${data.month}-${data.day}`;
 }
+
+function normalizePortalEmployeeRecord(data){
+  if(!data || typeof data !== "object") return null;
+  const name = normalizeName(data.name);
+  if(!name) return null;
+
+  return {
+    ...data,
+    name,
+    employeeId: String(data.employeeId || data.id || name).trim() || name,
+    joinedAt: data.joinedAt || "",
+    isAdmin: !!data.isAdmin
+  };
+}
+
+function getPortalEmployee(){
+  try{
+    const raw = localStorage.getItem(PORTAL_STORAGE_KEY);
+    if(!raw) return null;
+    return normalizePortalEmployeeRecord(JSON.parse(raw));
+  }catch(error){
+    console.warn("Portal employee read failed", error);
+    return null;
+  }
+}
+
+function getPortalAccountId(employee = currentEmployee){
+  const target = employee || getPortalEmployee();
+  return target ? String(target.employeeId || target.name || "").trim() : "";
+}
+
+function showPortalRequired(message = "기존 VOXTEK 포털에서 먼저 로그인한 뒤 다시 접속하세요."){
+  currentName = "";
+  currentEmployee = null;
+  myDraws = [];
+  hasDrawnToday = false;
+  drawCountToday = 0;
+
+  loginForm.classList.add("hidden");
+  logoutBtn.classList.remove("hidden");
+  logoutBtn.textContent = "PORTAL LOGIN";
+  sessionBox.classList.add("hidden");
+
+  clearResultTheme();
+  resultEl.className = "result lose";
+  resultEl.textContent = "PORTAL REQUIRED";
+  descEl.textContent = message;
+  setAuthMessage(message, "warn");
+  renderWinList();
+  renderLogs();
+  updateAccessUI();
+}
+
 
 function safeLocalGet(key){
   try{
@@ -1552,22 +1625,32 @@ function getPoolCacheKey(){
   return `${STORAGE_PREFIX}:ticket_pool`;
 }
 
+function getPoolMetaKey(){
+  return `${STORAGE_PREFIX}:ticket_pool_version`;
+}
+
+function isCurrentTicketPool(value){
+  return isValidTicketPool(value) && safeLocalGet(getPoolMetaKey()) === POOL_VERSION;
+}
+
 function getDefaultTicketPool(){
   const initialPool = [];
 
-  for(let i = 0; i < 90; i++){
+  for(let i = 0; i < FAIL_TICKET_TOTAL; i++){
     initialPool.push({
       type:"fail",
       label:"꽝",
-      ticketNumber:i + 1
+      ticketNumber:i + 1,
+      poolVersion:POOL_VERSION
     });
   }
 
-  prizeList.forEach((prize, index) => {
+  rewardTickets.forEach((prize, index) => {
     initialPool.push({
       type:"win",
       label:prize,
-      ticketNumber:91 + index
+      ticketNumber:FAIL_TICKET_TOTAL + 1 + index,
+      poolVersion:POOL_VERSION
     });
   });
 
@@ -1584,7 +1667,7 @@ function isValidTicketPool(value){
 
 function loadTicketPool(){
   const cached = loadJson(getPoolCacheKey(), null);
-  if(isValidTicketPool(cached)){
+  if(isCurrentTicketPool(cached)){
     ticketPool = cached;
   }else{
     ticketPool = getDefaultTicketPool();
@@ -1594,6 +1677,7 @@ function loadTicketPool(){
 
 function saveTicketPool(){
   saveJson(getPoolCacheKey(), ticketPool);
+  safeLocalSet(getPoolMetaKey(), POOL_VERSION);
 }
 
 function resetTicketPool(){
@@ -1715,10 +1799,12 @@ function showDefaultReadyScreen(){
     return;
   }
 
-  resultEl.textContent = currentName ? "READY" : "LOGIN REQUIRED";
-  descEl.textContent = currentName
-    ? "오늘의 직원 복지 추첨 준비가 완료되었습니다."
-    : "이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.";
+if (currentName){
+  resultEl.textContent = "READY";
+  descEl.textContent = "오늘의 직원 복지 추첨 준비가 완료되었습니다.";
+} else {
+  resultEl.textContent = "PORTAL SESSION REQUIRED";
+  descEl.textContent = "기존 VoxTek 포털에서 로그인한 뒤 오늘의 뽑기 페이지에 접속하십시오.";
 }
 
 function renderWinList(){
@@ -1765,11 +1851,11 @@ function updateAccessUI(){
   const counts = updateTicketCounters();
 
   if(!currentName){
-    statusTextEl.textContent = "LOGIN";
+    statusTextEl.textContent = "PORTAL";
     remainingCountEl.textContent = "LOGIN";
     drawBtn.disabled = true;
-    drawBtn.textContent = "START DRAW";
-    sessionSub.textContent = "이름과 패스워드를 입력하세요.";
+    drawBtn.textContent = "PORTAL REQUIRED";
+    sessionSub.textContent = "기존 포털 계정을 찾을 수 없습니다.";
     return;
   }
 
@@ -1866,6 +1952,124 @@ async function refreshMyDraws({ silent = false } = {}){
 
 function makeDrawResult(){
   return drawFromTicketPool();
+}
+
+function loadExternalMailItems(){
+  try{
+    const raw = localStorage.getItem(EXTERNAL_MAIL_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(error){
+    return [];
+  }
+}
+
+function saveExternalMailItems(items){
+  try{
+    localStorage.setItem(EXTERNAL_MAIL_KEY, JSON.stringify(items.slice(0, 80)));
+    return true;
+  }catch(error){
+    console.warn("External mail save failed", error);
+    return false;
+  }
+}
+
+function formatMailDate(dateKey){
+  return String(dateKey || getTodayKey()).replaceAll("-", ".");
+}
+
+function portalDepartmentName(employee){
+  const src = String(employee && employee.badge && employee.badge.src ? employee.badge.src : "").split("/").pop();
+  if(src === "v1.png") return "발렌티노";
+  if(src === "v2.png") return "복스";
+  if(src === "v3.png") return "벨벳";
+  return "미확인 소속";
+}
+
+function portalTeamName(employee){
+  const role = employee && employee.role && typeof employee.role === "object" ? employee.role : {};
+  return String(role.team || role.employment || "-").trim() || "-";
+}
+
+function portalGradeName(employee){
+  const role = employee && employee.role && typeof employee.role === "object" ? employee.role : {};
+  return String(role.grade || role.position || "-").trim() || "-";
+}
+
+function buildPraiseMailBody({ employeeName, accountId, employee, record }){
+  const safeName = escapeHtml(employeeName || "사원");
+  const safeAccountId = escapeHtml(accountId || "-");
+  const safeDepartment = escapeHtml(portalDepartmentName(employee));
+  const safeTeam = escapeHtml(portalTeamName(employee));
+  const safeGrade = escapeHtml(portalGradeName(employee));
+  const safeTicket = escapeHtml(record && record.ticket_number ? record.ticket_number : "-");
+  const safeDate = escapeHtml(formatMailDate(record && record.draw_date ? record.draw_date : getTodayKey()));
+
+  return `<article class="memo-shell">
+  <div class="memo-meta">
+    <div class="memo-row"><div class="memo-key">제목</div><div class="memo-value">칭찬 메일 발송권 승인</div></div>
+    <div class="memo-row"><div class="memo-key">수신</div><div class="memo-value">${safeName} 사원</div></div>
+    <div class="memo-row"><div class="memo-key">발신</div><div class="memo-value">Vox · Founder / CEO</div></div>
+    <div class="memo-row"><div class="memo-key">등급</div><div class="memo-value">대표 직권 칭찬 메일 (PRAISE CLEARANCE)</div></div>
+  </div>
+
+  <h2 class="memo-title-main">칭찬 메일 발송권 승인</h2>
+  <div class="memo-class">CLASSIFICATION: VOX DIRECT NOTICE · STAFF REWARD</div>
+
+  <div class="memo-content">
+    <p>${safeName}.</p>
+
+    <p>이번 직원 복지 뽑기 결과, 네가 <strong>칭찬 메일 발송권</strong>에 당첨됐더군.</p>
+
+    <p>그래, 운도 실력이라는 말이 있지. 그런 면에선 칭찬받아 마땅해. 수많은 꽝과 그럭저럭 쓸 만한 보상 사이에서 하필 이걸 뽑았다는 건, 적어도 오늘 네 운이 완전히 바닥은 아니었다는 뜻이니까.</p>
+
+    <p>물론 이걸로 네 업무 능력이 갑자기 극적으로 향상됐다는 소리는 아니야. 착각은 금물이지. 하지만 복스테크의 시스템이 널 오늘의 칭찬 대상으로 지목했고, 나는 근거 있는 결과를 굳이 무시하는 타입은 아니야.</p>
+
+    <p>그러니까 받아둬. 오늘 하루 정도는 네가 제법 운 좋고, 칭찬 메일 한 통쯤은 받을 만한 직원이었다고 인정해주지.</p>
+
+    <p>축하해, ${safeName}.<br>
+    이 정도면 꽤 괜찮은 결과야.</p>
+
+    <div class="memo-sign">
+      <strong>— Vox</strong><br>
+      Founder / CEO · VoxTek<br>
+      STATUS: PRAISE MAIL APPROVED
+    </div>
+  </div>
+</article>`;
+}
+
+function queuePraiseMail(record){
+  if(!record || record.result_label !== "칭찬 메일 발송권") return false;
+  const employee = currentEmployee || getPortalEmployee();
+  if(!employee) return false;
+
+  const accountId = getPortalAccountId(employee) || record.employee_name;
+  const mailId = `roulette_praise_${record.draw_date}_${accountId}_${record.ticket_number || Date.now()}`.replace(/[^a-zA-Z0-9_\-]/g, "_");
+  const existing = loadExternalMailItems().filter(item => item && item.id !== mailId);
+  const employeeName = normalizeName(employee.name || record.employee_name || currentName);
+
+  const mail = {
+    id:mailId,
+    source:"staff_roulette",
+    accountId,
+    accountName:employeeName,
+    employeeId:accountId,
+    employeeName,
+    drawDate:record.draw_date,
+    ticketNumber:record.ticket_number,
+    prizeLabel:record.result_label,
+    createdAt:new Date().toISOString(),
+    date:formatMailDate(record.draw_date),
+    sortDate:record.draw_date,
+    sender: "Vox · Founder / CEO",
+    subject: "칭찬 메일 발송권 승인",
+    badge: "PRAISE",
+    body:buildPraiseMailBody({ employeeName, accountId, employee, record })
+  };
+
+  existing.unshift(mail);
+  return saveExternalMailItems(existing);
 }
 
 function buildDrawRecord(result, resultDesc){
@@ -2090,7 +2294,7 @@ async function draw(){
   if(isRolling) return;
 
   if(!currentName){
-    setAuthMessage("먼저 로그인하세요.", "warn");
+    setAuthMessage("기존 VOXTEK 포털에서 먼저 로그인하세요.", "warn");
     return;
   }
 
@@ -2154,10 +2358,22 @@ async function draw(){
   }
 
   const record = buildDrawRecord(picked, finalDesc);
+  if(picked.type === "win" && picked.label === "칭찬 메일 발송권"){
+    const mailed = queuePraiseMail(record);
+    if(mailed){
+      record.result_desc = `${finalDesc} 포털 메일함에 칭찬 메일이 자동 발송되었습니다.`;
+      descEl.textContent = record.result_desc;
+    }
+  }
   addLocalDrawRecord(record);
-  saveScreenState(record, finalDesc);
+  saveScreenState(record, record.result_desc || finalDesc);
   consumeResetOverride();
-  setAuthMessage("추첨 완료.", picked.type === "win" ? "ok" : "warn");
+  setAuthMessage(
+    picked.label === "칭찬 메일 발송권"
+      ? "추첨 완료. 칭찬 메일이 포털 메일함으로 발송되었습니다."
+      : "추첨 완료.",
+    picked.type === "win" ? "ok" : "warn"
+  );
 
   try{
     await saveDrawRecord(record);
@@ -2182,17 +2398,30 @@ function escapeHtml(str){
     .replaceAll("'", "&#39;");
 }
 
-function activateSession(name, { message = "로그인 완료.", silent = false } = {}){
-  currentName = normalizeName(name);
-  if(!currentName) return;
+function activateSession(employeeOrName, { message = "포털 계정 연동 완료.", silent = false } = {}){
+  const employee = typeof employeeOrName === "object"
+    ? normalizePortalEmployeeRecord(employeeOrName)
+    : normalizePortalEmployeeRecord({ name:employeeOrName });
+
+  if(!employee || !employee.name) return;
+
+  if(employee.isAdmin){
+    showPortalRequired("관리자 계정은 직원 전용 뽑기에 참여할 수 없습니다. 일반 사원 계정으로 접속하세요.");
+    return;
+  }
+
+  currentEmployee = employee;
+  currentName = employee.name;
 
   saveSession(currentName);
   nameInput.value = currentName;
   sessionUser.textContent = currentName;
   loginForm.classList.add("hidden");
   logoutBtn.classList.remove("hidden");
+  logoutBtn.textContent = "PORTAL";
   sessionBox.classList.remove("hidden");
   passwordInput.value = "";
+  sessionSub.textContent = employee.employeeId ? `포털 계정 ${employee.employeeId} 연동됨` : "포털 계정 연동됨";
 
   loadTicketPool();
   applyCachedDraws(currentName);
@@ -2204,7 +2433,7 @@ function activateSession(name, { message = "로그인 완료.", silent = false }
   if(!silent){
     setAuthMessage(message, "ok");
   }else{
-    setAuthMessage("이전 접속 정보를 불러왔습니다.", "ok");
+    setAuthMessage("기존 포털 계정을 불러왔습니다.", "ok");
   }
 
   refreshMyDraws({ silent:true }).then(() => {
@@ -2224,11 +2453,11 @@ muteBtn.addEventListener("click", () => {
 
 resetBtn.addEventListener("click", () => {
   if(!currentName){
-    setAuthMessage("먼저 로그인하세요.", "warn");
+    setAuthMessage("기존 VOXTEK 포털에서 먼저 로그인하세요.", "warn");
     return;
   }
 
-  const ok = confirm("이 기기의 추첨 데이터를 초기화할까요?\n남은 추첨권과 화면 히스토리가 처음 상태로 돌아갑니다.");
+  const ok = confirm("이 기기의 추첨 데이터를 초기화할까요?\n남은 추첨권과 화면 히스토리가 처음 상태로 돌아갑니다.\n※ Supabase에 저장된 기존 기록은 SQL Editor에서 별도로 삭제해야 합니다.");
   if(!ok) return;
 
   clearLocalDrawData();
@@ -2253,50 +2482,24 @@ resetBtn.addEventListener("click", () => {
 
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
+  const employee = getPortalEmployee();
 
-  const name = normalizeName(nameInput.value);
-  const password = passwordInput.value;
-
-  if(!name){
-    setAuthMessage("이름을 입력하세요.", "warn");
+  if(employee && !employee.isAdmin){
+    loginBtn.disabled = true;
+    loginBtn.textContent = "CHECKING...";
+    setAuthMessage("포털 계정 확인 중...", "warn");
+    activateSession(employee, { message:"포털 계정 연동 완료." });
+    await refreshMyDraws({ silent:true });
+    loginBtn.disabled = false;
+    loginBtn.textContent = "LOGIN";
     return;
   }
 
-  if(password !== ACCESS_PASSWORD){
-    setAuthMessage("패스워드가 맞지 않습니다.", "error");
-    passwordInput.value = "";
-    passwordInput.focus();
-    return;
-  }
-
-  loginBtn.disabled = true;
-  loginBtn.textContent = "CHECKING...";
-  setAuthMessage("접속 확인 중...", "warn");
-
-  activateSession(name, { message:"로그인 완료." });
-  await refreshMyDraws({ silent:true });
-
-  loginBtn.disabled = false;
-  loginBtn.textContent = "LOGIN";
+  showPortalRequired();
 });
 
 logoutBtn.addEventListener("click", () => {
-  clearSession();
-  currentName = "";
-  myDraws = [];
-  hasDrawnToday = false;
-  drawCountToday = 0;
-  loginForm.classList.remove("hidden");
-  logoutBtn.classList.add("hidden");
-  sessionBox.classList.add("hidden");
-  clearResultTheme();
-  resultEl.className = "result";
-  resultEl.textContent = "LOGIN REQUIRED";
-  descEl.textContent = "이름과 패스워드를 입력하면 오늘의 추첨을 시작할 수 있습니다.";
-  setAuthMessage("로그아웃되었습니다.", "warn");
-  renderWinList();
-  renderLogs();
-  updateAccessUI();
+  window.location.href = PORTAL_URL;
 });
 
 function createParticles(){
@@ -2318,21 +2521,18 @@ function boot(){
   createParticles();
   loadTicketPool();
 
-  const savedSession = normalizeName(getCookie(COOKIE_SESSION_KEY) || safeLocalGet(`${STORAGE_PREFIX}:active_session`));
-  const savedName = normalizeName(safeLocalGet(`${STORAGE_PREFIX}:last_name`));
-
-  if(savedSession){
-    activateSession(savedSession, { silent:true });
+  const employee = getPortalEmployee();
+  if(employee && !employee.isAdmin){
+    activateSession(employee, { silent:true });
     return;
   }
 
-  if(savedName){
-    nameInput.value = savedName;
+  if(employee && employee.isAdmin){
+    showPortalRequired("관리자 계정은 직원 전용 뽑기에 참여할 수 없습니다. 일반 사원 계정으로 접속하세요.");
+    return;
   }
 
-  renderWinList();
-  renderLogs();
-  updateAccessUI();
+  showPortalRequired();
 }
 
 boot();
